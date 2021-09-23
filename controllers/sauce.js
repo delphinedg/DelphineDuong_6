@@ -94,7 +94,7 @@ exports.likeSauce = (req, res, next) => {
       Sauce.findOne({ _id: sauceId })
         .then((sauce) => {
           if (sauce.usersLiked.includes(userId)) {
-            console.log("Demande non autorisée");
+            res.status(400).json({ message: "Demande non autorisée" });
           } else {
             Sauce.updateOne(
               { _id: sauceId },
@@ -137,7 +137,7 @@ exports.likeSauce = (req, res, next) => {
       Sauce.findOne({ _id: sauceId })
         .then((sauce) => {
           if (sauce.usersDisliked.includes(userId)) {
-            console.log("Demande non autorisée");
+            res.status(400).json({ message: "Demande non autorisée" });
           } else {
             Sauce.updateOne(
               { _id: sauceId },
@@ -150,6 +150,6 @@ exports.likeSauce = (req, res, next) => {
         .catch((error) => res.status(400).json({ error }));
       break;
     default:
-      console.log(error);
+      res.status(400).json({ message: "Erreur" });
   }
 };
