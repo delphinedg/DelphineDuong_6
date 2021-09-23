@@ -4,11 +4,12 @@ Backend du projet 6 du parcours Développeur web d'Openclassrooms.
 
 # Pré-requis
 
-Vous aurez besoin d'avoir Node.js et `npm` installés localement sur votre machine.
+Vous aurez besoin d'avoir :
+
+- Node.js et `npm` installés localement sur votre machine
+- Du dossier frontend qui se trouve dans ce lien : https://github.com/OpenClassrooms-Student-Center/Web-Developer-P6
 
 # Installation
-
-Clonez le dépôt Git.
 
 Pour faire fonctionner le backend, ouvrez votre terminal puis :
 
