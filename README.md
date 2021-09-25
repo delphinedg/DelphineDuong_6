@@ -14,4 +14,4 @@ Vous aurez besoin d'avoir :
 Pour faire fonctionner le backend, ouvrez votre terminal puis :
 
 - installez les modules Node.js avec la commande `npm install`
-- faites fonctionner le serveur avec la commande `nodemon server`.
+- faites fonctionner le serveur avec la commande `nodemon server` ou `node server` (si vous n'avez pas nodemon).
