@@ -57,7 +57,7 @@ exports.getOneSauce = (req, res, next) => {
 
 // MODIFIER UNE SAUCE
 // On crée un objet sauceObject qui regarde si req.file existe ou pas. S'il existe, on récupère toutes les informations de la requête et on génère l'imageUrl. Si non, on prend le corps de l'objet.
-// On utilise la méthode updateOne() avec en premier argument, l'objet qu'on modifie et en deuxième argument, la nouvelle version de l'objet.
+// On vérifie que l'userId de la sauce est le même que l'userId de la requête. Si oui, on utilise la méthode updateOne() avec en premier argument, l'objet qu'on modifie et en deuxième argument, la nouvelle version de l'objet. Si l'userId ne correspond pas, on renvoie une erreur 403.
 exports.updateSauce = (req, res, next) => {
   const sauceObject = req.file
     ? {
@@ -68,17 +68,24 @@ exports.updateSauce = (req, res, next) => {
       }
     : { ...req.body };
 
-  Sauce.updateOne(
-    { _id: req.params.id },
-    { ...sauceObject, _id: req.params.id }
-  )
-    .then(res.status(200).json({ message: "Sauce modifiée" }))
-    .catch((error) => res.status(400).json({ error }));
+  Sauce.findOne({ _id: req.params.id })
+    .then((sauce) => {
+      if (sauce.userId == sauceObject.userId) {
+        Sauce.updateOne(
+          { _id: req.params.id },
+          { ...sauceObject, _id: req.params.id }
+        )
+          .then(res.status(200).json({ message: "Sauce modifiée" }))
+          .catch((error) => res.status(400).json({ error }));
+      } else {
+        res.status(403).json({ error });
+      }
+    })
+    .catch((error) => res.status(500).json({ error }));
 };
 
 // SUPPRIMER UNE SAUCE
-// On accède à la sauce correspondante en utilisant l'ID comme paramètre.
-// On utilise la méthode deleteOne() et on lui passe l'objet à supprimer.
+// On accède à la sauce correspondante en utilisant l'ID comme paramètre. On récupère le nom du fichier image puis on utilise la fonction unlink du package fs pour supprimer le fichier, en lui passant le fichier à supprimer (le chemin) et le callback à exécuter. On utilise ensuite la méthode deleteOne() et on lui passe l'objet à supprimer de la base de données.
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => {
@@ -107,7 +114,7 @@ exports.likeSauce = (req, res, next) => {
       Sauce.findOne({ _id: sauceId })
         .then((sauce) => {
           if (sauce.usersLiked.includes(userId)) {
-            res.status(400).json({ message: "Demande non autorisée" });
+            res.status(403).json({ error });
           } else {
             Sauce.updateOne(
               { _id: sauceId },
@@ -141,7 +148,7 @@ exports.likeSauce = (req, res, next) => {
               )
               .catch((error) => res.status(400).json({ error }));
           } else {
-            console.log("Erreur");
+            res.status(400).json({ error });
           }
         })
         .catch();
@@ -150,7 +157,7 @@ exports.likeSauce = (req, res, next) => {
       Sauce.findOne({ _id: sauceId })
         .then((sauce) => {
           if (sauce.usersDisliked.includes(userId)) {
-            res.status(400).json({ message: "Demande non autorisée" });
+            res.status(403).json({ error });
           } else {
             Sauce.updateOne(
               { _id: sauceId },
@@ -163,6 +170,6 @@ exports.likeSauce = (req, res, next) => {
         .catch((error) => res.status(400).json({ error }));
       break;
     default:
-      res.status(400).json({ message: "Erreur" });
+      res.status(400).json({ error });
   }
 };
